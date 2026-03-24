@@ -1,11 +1,12 @@
 const mailer = require("nodemailer");
+require("dotenv").config();
 
 const mailSend = async (to, subject, text) => {
   const transporter = await mailer.createTransport({
     service: "gmail",
     auth: {
-      user: "mayurparmar0317@gmail.com",
-      pass: "rfeo ojbd dyuv sdfs",
+      user: process.env.USER_EMAIL,
+      pass: process.env.USER_PASSWORD,
     },
   });
   const htmlContent = `<!DOCTYPE html>

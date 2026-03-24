@@ -83,8 +83,38 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  try {
+    const deleteUserObj = await userSchema.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      message: "User deleted successfully",
+      data: deleteUserObj,
+    });
+  } catch {
+    res.status(404).json({
+      message: "User not found",
+    });
+  }
+};
+
+const getUserById = async (req, res) => {
+  try {
+    const getUser = await userSchema.findById(req.params.id);
+    res.status(200).json({
+      message: "User",
+      data: getUser,
+    });
+  } catch {
+    res.status(404).json({
+      message: "User not found",
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   getAllUsers,
   loginUser,
+  deleteUser,
+  getUserById,
 };
