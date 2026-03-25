@@ -1,4 +1,6 @@
 const userSchema = require("../models/UserModel");
+const customerSchema = require("../models/CustomerModel");
+const vendorSchema = require("../models/VendorModel");
 const bcrypt = require("bcrypt");
 const mailSend = require("../utils/MailUtils");
 
@@ -17,6 +19,22 @@ const registerUser = async (req, res) => {
       ...req.body,
       password: hashedPassword,
     });
+
+    if (req.body.role === "vendor") {
+      await vendorSchema.create({
+        userId: savedUser._id,
+        shopName: req.body.shopName,
+        address: req.body.address,
+      });
+    }
+
+    if (req.body.role === "customer") {
+      await customerSchema.create({
+        userId: savedUser._id,
+        address: req.body.address,
+      });
+    }
+
     await mailSend(
       savedUser.email,
       "Welcome to Wear Web",
@@ -111,10 +129,32 @@ const getUserById = async (req, res) => {
   }
 };
 
+const updateUserById = async (req, res) => {
+  try {
+    const updateUser = await userSchema.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: req.body,
+      },
+      { new: true },
+    );
+    res.status(200).json({
+      message: "User updated successfully",
+      data: updateUser,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "error while updating user",
+      err: err,
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   getAllUsers,
   loginUser,
   deleteUser,
   getUserById,
+  updateUserById,
 };
