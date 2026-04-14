@@ -20,7 +20,7 @@ const productSchema = new Schema({
   stock: {
     type: Number,
   },
-  imageURL: {
+  imagePath: {
     type: String,
   },
   vendorId: {

@@ -1,26 +1,30 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { HomePage } from "../pages/HomePage";
+import { ProductListPage } from "../pages/ProductListPage";
+import { ProductDetailPage } from "../pages/ProductDetailPage";
+import { CartPage } from "../pages/CartPage";
+import { CheckoutPage } from "../pages/CheckoutPage";
 import { LoginPage } from "../components/LoginPage";
 import { SignupPage } from "../components/SignupPage";
-import { UserNavbar } from "../components/user/UserNavbar";
-import { AdminSidebar } from "../components/admin/AdminSidebar";
+import { AddProductPage } from "../pages/admin/AddProductPage";
+import { ManageProductsPage } from "../pages/admin/ManageProductsPage";
+import { OrdersPage } from "../pages/admin/OrdersPage";
 
 const router = createBrowserRouter([
-  {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/signup",
-    element: <SignupPage />,
-  },
-  {
-    path: "/user",
-    element: <UserNavbar />,
-  },
-  {
-    path: "/admin",
-    element: <AdminSidebar />,
-  },
+  // User Routes
+  { path: "/", element: <HomePage /> },
+  { path: "/products", element: <ProductListPage /> },
+  { path: "/product/:id", element: <ProductDetailPage /> },
+  { path: "/cart", element: <CartPage /> },
+  { path: "/checkout", element: <CheckoutPage /> },
+  { path: "/login", element: <LoginPage /> },
+  { path: "/signup", element: <SignupPage /> },
+
+  // Admin Routes
+  { path: "/admin", element: <ManageProductsPage /> },
+  { path: "/admin/add-product", element: <AddProductPage /> },
+  { path: "/admin/products", element: <ManageProductsPage /> },
+  { path: "/admin/orders", element: <OrdersPage /> },
 ]);
 
 const AppRouter = () => {

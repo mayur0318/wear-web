@@ -6,14 +6,22 @@ const mailSend = require("../utils/MailUtils");
 
 const registerUser = async (req, res) => {
   try {
-    const existingUser = await userSchema.findOne({ email: req.body.email });
+    const { name, email, password, phoneNo, role, address, shopName } = req.body;
 
+    if (!name || !email || !password || !phoneNo) {
+      return res.status(400).json({
+        message: "Name, email, password, and phone number are required",
+      });
+    }
+
+    const existingUser = await userSchema.findOne({ email });
+    console.log("BODY:", req.body);
     if (existingUser) {
       return res.status(400).json({
         message: "User already exists",
       });
     }
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const savedUser = await userSchema.create({
       ...req.body,
@@ -24,14 +32,14 @@ const registerUser = async (req, res) => {
       await vendorSchema.create({
         userId: savedUser._id,
         shopName: req.body.shopName,
-        address: req.body.address,
+        address: req.body.address || "",
       });
     }
 
     if (req.body.role === "customer") {
       await customerSchema.create({
         userId: savedUser._id,
-        address: req.body.address,
+        address: req.body.address || "",
       });
     }
 

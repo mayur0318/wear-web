@@ -36,6 +36,6 @@ const reviewRoutes = require("./src/routes/ReviewRoutes");
 app.use("/review", reviewRoutes);
 
 const PORT = process.env.PORT;
-app.listen(PORT, () => {
-  console.log(`server started on port ${PORT}`);
+app.listen(3000, () => {
+  console.log(`server started on port 3000`);
 });
