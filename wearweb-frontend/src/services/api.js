@@ -4,6 +4,7 @@ const api = axios.create({
   baseURL: "http://localhost:3000", // Backend URL
 });
 
+<<<<<<< HEAD
 // ✅ Interceptor: Attach JWT token + user-id to every request automatically
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
@@ -51,26 +52,42 @@ export const addProduct = (data) => api.post("/product/product", data);
 export const fetchProducts = () => api.get("/product/products");
 export const fetchAllProducts = () => api.get("/product/products");
 export const fetchProductById = (id) => api.get(`/product/product/${id}`);
+=======
+// Products
+export const addProduct = (data) => api.post("/product/product", data);
+export const fetchProducts = () => api.get("/product/products");
+export const fetchProductById = (id) => api.get(`/product/${id}`);
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
 
 // Cart
 export const addToCart = (data) => api.post("/cart/add", data);
 export const getCart = (customerId) => api.get(`/cart/${customerId}`);
+<<<<<<< HEAD
 export const removeFromCart = (userId, productId) => api.delete(`/cart/${userId}/${productId}`);
 export const clearCartAPI = (userId) => api.delete(`/cart/clear/${userId}`);
+=======
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
 
 // Orders
 export const createOrder = (data) => api.post("/order/create", data);
 export const getOrders = (customerId) => api.get(`/order/${customerId}`);
+<<<<<<< HEAD
 export const fetchAllOrders = () => api.get('/order/all');
 
 // Payment
 export const makePayment = (data) => api.post("/payment/pay", data); // Legacy
 export const createRazorpayOrder = (data) => api.post("/payment/create-order", data);
 export const verifyRazorpayPayment = (data) => api.post("/payment/verify-payment", data);
+=======
+
+// Payment
+export const makePayment = (data) => api.post("/payment", data);
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
 
 // Users
 export const registerUser = (data) => api.post("/user/register", data);
 export const loginUser = (data) => api.post("/user/login", data);
+<<<<<<< HEAD
 export const fetchAllUsers = () => api.get('/user/users');
 
 // Admin Vendor Requests
@@ -95,5 +112,7 @@ export const fetchVendorReviews = () => api.get("/api/vendor/reviews");
 
 export const fetchVendorProfile = () => api.get("/api/vendor/profile");
 export const updateVendorProfile = (data) => api.put("/api/vendor/profile", data);
+=======
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
 
 export default api;

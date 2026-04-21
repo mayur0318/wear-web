@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
+<<<<<<< HEAD
 import api, { fetchAllOrders } from "../../services/api";
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import { toast } from "react-toastify";
+=======
+import api from "../../services/api";
+import { Navbar } from "../../components/common/Navbar";
+import { Footer } from "../../components/common/Footer";
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
 
 export const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+<<<<<<< HEAD
     const fetchOrders = async () => {
       try {
         const res = await fetchAllOrders();
@@ -16,10 +23,21 @@ export const OrdersPage = () => {
         setOrders(Array.isArray(fetchedData) ? fetchedData : []);
       } catch (error) {
         console.error("FETCH ERROR in [OrdersPage]:", error.response?.data || error.message);
+=======
+    const fetchAllOrders = async () => {
+      try {
+        // Assuming admin can fetch all orders from /order or similar route.
+        // We'll just call the customer specific one with a generic admin id or generic /order route
+        const response = await api.get("/order");
+        setOrders(response.data.orders || response.data || []);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
       } finally {
         setLoading(false);
       }
     };
+<<<<<<< HEAD
     fetchOrders();
   }, []);
 
@@ -121,11 +139,50 @@ export const OrdersPage = () => {
                 ))
               ) : (
                 <tr><td colSpan="7" className="py-12 text-center text-sm font-medium text-slate-500 bg-slate-50/50">No orders found.</td></tr>
+=======
+    fetchAllOrders();
+  }, []);
+
+  return (
+    <>
+      <Navbar />
+      <div className="body-content">
+        <div className="container">
+          <h3>Manage Orders</h3>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Total Price</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan="4">Loading...</td></tr>
+              ) : orders.length > 0 ? (
+                orders.map((order) => (
+                  <tr key={order._id || order.id}>
+                    <td>{order._id || order.id}</td>
+                    <td>{order.customerId?.name || order.customerId || "Unknown"}</td>
+                    <td>${order.totalPrice}</td>
+                    <td>{order.status || "Pending"}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr><td colSpan="4">No orders found.</td></tr>
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
               )}
             </tbody>
           </table>
         </div>
       </div>
+<<<<<<< HEAD
     </AdminLayout>
+=======
+      <Footer />
+    </>
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
   );
 };

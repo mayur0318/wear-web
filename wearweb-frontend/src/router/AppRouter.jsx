@@ -6,6 +6,7 @@ import { CartPage } from "../pages/CartPage";
 import { CheckoutPage } from "../pages/CheckoutPage";
 import { LoginPage } from "../components/LoginPage";
 import { SignupPage } from "../components/SignupPage";
+<<<<<<< HEAD
 import { MyAccountPage } from "../pages/MyAccountPage";
 import { WishlistPage } from "../pages/WishlistPage";
 import { ContactPage } from "../pages/ContactPage";
@@ -41,11 +42,20 @@ import { AdminRouteGuard } from "../components/admin/AdminRouteGuard";
 
 const router = createBrowserRouter([
   // Public Routes
+=======
+import { AddProductPage } from "../pages/admin/AddProductPage";
+import { ManageProductsPage } from "../pages/admin/ManageProductsPage";
+import { OrdersPage } from "../pages/admin/OrdersPage";
+
+const router = createBrowserRouter([
+  // User Routes
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
   { path: "/", element: <HomePage /> },
   { path: "/products", element: <ProductListPage /> },
   { path: "/product/:id", element: <ProductDetailPage /> },
   { path: "/cart", element: <CartPage /> },
   { path: "/checkout", element: <CheckoutPage /> },
+<<<<<<< HEAD
   { path: "/payment", element: <PaymentPage /> },
   { path: "/order-success/:orderId", element: <OrderSuccessPage /> },
   { path: "/login", element: <LoginPage /> },
@@ -84,6 +94,16 @@ const router = createBrowserRouter([
   { path: "/vendor/sales-report", element: <VendorSalesReportPage /> },
   { path: "/vendor/reviews", element: <VendorReviewsPage /> },
   { path: "/vendor/profile", element: <VendorProfilePage /> },
+=======
+  { path: "/login", element: <LoginPage /> },
+  { path: "/signup", element: <SignupPage /> },
+
+  // Admin Routes
+  { path: "/admin", element: <ManageProductsPage /> },
+  { path: "/admin/add-product", element: <AddProductPage /> },
+  { path: "/admin/products", element: <ManageProductsPage /> },
+  { path: "/admin/orders", element: <OrdersPage /> },
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
 ]);
 
 const AppRouter = () => {

@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
+<<<<<<< HEAD
 import { Link } from "react-router-dom";
 import api, { fetchAllProducts } from "../../services/api";
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import { toast } from "react-toastify";
+=======
+import { fetchProducts } from "../../services/api";
+import { Navbar } from "../../components/common/Navbar";
+import { Footer } from "../../components/common/Footer";
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
 
 export const ManageProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -11,9 +17,14 @@ export const ManageProductsPage = () => {
   useEffect(() => {
     const getProducts = async () => {
       try {
+<<<<<<< HEAD
         const res = await fetchAllProducts();
         console.log("Fetched Products:", res);
         setProducts(res.data.data || res.data || []);
+=======
+        const response = await fetchProducts();
+        setProducts(response.data.products || response.data || []);
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
@@ -23,6 +34,7 @@ export const ManageProductsPage = () => {
     getProducts();
   }, []);
 
+<<<<<<< HEAD
   const handleDelete = async (productId) => {
     if (!window.confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
       return;
@@ -101,10 +113,47 @@ export const ManageProductsPage = () => {
                   </tr>
                 ))
               )}
+=======
+  return (
+    <>
+      <Navbar />
+      <div className="body-content">
+        <div className="container">
+          <h3>Manage Products</h3>
+          <a href="/admin/add-product" className="btn btn-primary m-b-20">Add New Product</a>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan="4">Loading...</td></tr>
+              ) : products.map((product) => (
+                <tr key={product._id || product.id}>
+                  <td>{product._id || product.id}</td>
+                  <td>{product.name}</td>
+                  <td>${product.price}</td>
+                  <td>
+                    <button className="btn btn-sm btn-info">Edit</button>
+                    <button className="btn btn-sm btn-danger ml-2">Delete</button>
+                  </td>
+                </tr>
+              ))}
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
             </tbody>
           </table>
         </div>
       </div>
+<<<<<<< HEAD
     </AdminLayout>
+=======
+      <Footer />
+    </>
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
   );
 };

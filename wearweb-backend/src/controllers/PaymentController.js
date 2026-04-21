@@ -127,17 +127,41 @@ const makePayment = async (req, res) => {
 const getPaymentByOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
+<<<<<<< HEAD
     const payment = await Payment.findOne({ orderId });
     if (!payment) return res.status(404).json({ message: "Payment not found" });
     res.status(200).json({ message: "Payment fetched successfully", data: payment });
   } catch (err) {
     res.status(500).json({ message: "Error fetching payment", err });
+=======
+
+    const payment = await Payment.findOne({ orderId });
+
+    if (!payment) {
+      return res.status(404).json({
+        message: "Payment not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Payment fetched successfully",
+      data: payment,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error fetching payment",
+      err: err,
+    });
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
   }
 };
 
 module.exports = {
   makePayment,
   getPaymentByOrder,
+<<<<<<< HEAD
   createOrder,
   verifyPayment
+=======
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
 };

@@ -21,9 +21,12 @@ const productSchema = new Schema({
     type: Number,
   },
   imagePath: {
+<<<<<<< HEAD
     type: String,
   },
   category: {
+=======
+>>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
     type: String,
   },
   vendorId: {
