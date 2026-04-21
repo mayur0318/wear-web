@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const cartSchema = new Schema({
-  customerId: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Customer",
+    ref: "User",
   },
-  productList: [
+  items: [
     {
       productId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -18,7 +18,7 @@ const cartSchema = new Schema({
       },
     },
   ],
-  totalAmount: {
+  totalPrice: {
     type: Number,
     default: 0,
   },

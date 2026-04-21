@@ -3,17 +3,27 @@ const customerSchema = require("../models/CustomerModel");
 const vendorSchema = require("../models/VendorModel");
 const bcrypt = require("bcrypt");
 const mailSend = require("../utils/MailUtils");
+const uploadToCloudinary = require("../utils/CoudinaryUtils");
+const { generateToken } = require("../middleware/AuthMiddleware");
 
 const registerUser = async (req, res) => {
   try {
-    const existingUser = await userSchema.findOne({ email: req.body.email });
+    const { name, email, password, phoneNo, role, address, shopName } = req.body;
 
+    if (!name || !email || !password || !phoneNo) {
+      return res.status(400).json({
+        message: "Name, email, password, and phone number are required",
+      });
+    }
+
+    const existingUser = await userSchema.findOne({ email });
+    console.log("BODY:", req.body);
     if (existingUser) {
       return res.status(400).json({
         message: "User already exists",
       });
     }
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const savedUser = await userSchema.create({
       ...req.body,
@@ -24,14 +34,14 @@ const registerUser = async (req, res) => {
       await vendorSchema.create({
         userId: savedUser._id,
         shopName: req.body.shopName,
-        address: req.body.address,
+        address: req.body.address || "",
       });
     }
 
-    if (req.body.role === "customer") {
+    if (req.body.role === "customer" || !req.body.role) {
       await customerSchema.create({
         userId: savedUser._id,
-        address: req.body.address,
+        address: req.body.address || "",
       });
     }
 
@@ -52,10 +62,56 @@ const registerUser = async (req, res) => {
   }
 };
 
+const vendorSignup = async (req, res) => {
+  try {
+    const { name, email, password, phoneNo, shopName, address } = req.body;
+
+    if (!name || !email || !password || !phoneNo || !shopName) {
+      return res.status(400).json({
+        message: "Name, email, password, phone number, and shop name are required",
+      });
+    }
+
+    const existingUser = await userSchema.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User already exists",
+      });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const savedUser = await userSchema.create({
+      name, email, password: hashedPassword, phoneNo, role: "vendor", address
+    });
+
+    await vendorSchema.create({
+      userId: savedUser._id,
+      shopName: shopName,
+      address: address || "",
+      status: "pending"
+    });
+
+    await mailSend(
+      savedUser.email,
+      "Welcome to Wear Web as a Vendor",
+      "Thank you for registering as a vendor. Admin will review and approve your account shortly.",
+    );
+    
+    res.status(201).json({
+      message: "Your vendor account is under review. Admin will approve it shortly.",
+      data: savedUser,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "error while creating vendor!!",
+      err: err,
+    });
+  }
+};
+
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    // const findUserFromEmail = await userSchema.findOne({ modelColumnName: req.body.email });
     const findUserFromEmail = await userSchema.findOne({ email: email });
     if (findUserFromEmail) {
       const isPasswordMatched = await bcrypt.compare(
@@ -63,8 +119,27 @@ const loginUser = async (req, res) => {
         findUserFromEmail.password,
       );
       if (isPasswordMatched) {
+        
+        // Vendor Approval check
+        if (findUserFromEmail.role === "vendor") {
+          const vendorRecord = await vendorSchema.findOne({ userId: findUserFromEmail._id });
+          if (!vendorRecord) {
+            return res.status(404).json({ message: "Vendor record not found" });
+          }
+          if (vendorRecord.status === "pending") {
+             return res.status(403).json({ message: "Your account is pending approval." });
+          }
+          if (vendorRecord.status === "rejected") {
+             return res.status(403).json({ message: "Your account has been rejected. Contact support." });
+          }
+        }
+
+        // Generate JWT token
+        const token = generateToken(findUserFromEmail);
+
         res.status(200).json({
           message: "Login Success",
+          token,
           data: findUserFromEmail,
           role: findUserFromEmail.role,
         });
@@ -131,10 +206,17 @@ const getUserById = async (req, res) => {
 
 const updateUserById = async (req, res) => {
   try {
+    let updateData = { ...req.body };
+
+    if (req.file) {
+      const cloudinaryResponse = await uploadToCloudinary(req.file.path);
+      updateData.profilePicture = cloudinaryResponse.secure_url;
+    }
+
     const updateUser = await userSchema.findByIdAndUpdate(
       req.params.id,
       {
-        $set: req.body,
+        $set: updateData,
       },
       { new: true },
     );
@@ -152,6 +234,7 @@ const updateUserById = async (req, res) => {
 
 module.exports = {
   registerUser,
+  vendorSignup,
   getAllUsers,
   loginUser,
   deleteUser,

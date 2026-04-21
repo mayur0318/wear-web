@@ -38,6 +38,13 @@ export const AdminSidebar = () => {
           >
             Users
           </Link>
+
+          <Link
+            to="/admin/vendor-requests"
+            className="px-4 py-2 rounded-lg hover:bg-gray-700 transition"
+          >
+            Vendor Requests
+          </Link>
         </nav>
       </div>
 

@@ -1,13 +1,35 @@
 const productSchema = require("../models/ProductModel");
+const uploadToCloudinary = require("../utils/CoudinaryUtils");
 
 const createProduct = async (req, res) => {
   try {
-    const addProduct = await productSchema.create(req.body);
+    // const addProduct = await productSchema.create(req.body);
+    // const addProduct = await productSchema.create({
+    //   ...req.body,
+    //   imagePath: req.file.path,
+    // });
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Image file is required",
+      });
+    }
+
+    const cloudinaryResponse = await uploadToCloudinary(req.file.path);
+
+    console.log("response..", cloudinaryResponse);
+
+    const addProduct = await productSchema.create({
+      ...req.body,
+      imagePath: cloudinaryResponse.secure_url,
+    });
+
     res.status(201).json({
       message: "Product added successfully",
       data: addProduct,
     });
   } catch (err) {
+    console.log("err here", err);
+
     res.status(500).json({
       message: "Error while creating the product",
       err: err,

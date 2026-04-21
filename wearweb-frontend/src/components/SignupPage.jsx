@@ -1,148 +1,179 @@
-import axios from "axios";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { registerUser } from "../services/api";
+import api from "../services/api";
+import { Navbar } from "./common/Navbar";
+import { Footer } from "./common/Footer";
 
 export const SignupPage = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({ mode: "all" });
-
-  const validationSchema = {
-    firstNameValidator: {
-      required: {
-        value: true,
-        message: "firstname is required*",
-      },
-      maxLength: {
-        value: 20,
-        message: "max 20 char is allowed*",
-      },
-    },
-    lastNameValidator: {
-      required: {
-        value: true,
-        message: "lastname is required*",
-      },
-      maxLength: {
-        value: 20,
-        message: "max 20 char is allowed*",
-      },
-    },
-    emailValidator: {
-      required: {
-        value: true,
-        message: "email is required*",
-      },
-    },
-    passwordValidator: {
-      required: {
-        value: true,
-        message: "password is required*",
-      },
-      validate: {
-        hasUpperCase: (value) =>
-          /[A-Z]/.test(value) || "At least 1 capital letter required",
-        hasNumber: (value) =>
-          /[0-9]/.test(value) || "At least 1 number required",
-        minLength: (value) =>
-          value.length >= 8 || "Minimum 8 characters required",
-      },
-    },
-  };
-
+  const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
-
-  // const submitHandler = async (data) => {
-  //   console.log("data ->", data);
-  //   const res = await axios.post("/user/register", data);
-
-  //   console.log("res", res);
-  //   console.log("res.data..", res.data);
-  //   console.log("res.data.data..", res.data.data);
-  //   console.log("res.status..", res.status);
-  //   toast.success("User registered successfully");
-  //   navigate("/login");
-  // };
+  const [role, setRole] = useState("customer");
 
   const submitHandler = async (data) => {
     try {
-      const res = await axios.post("/user/register", data);
-      if (res.status == 201) {
-        toast.success("User registered successfully");
-        navigate("/login");
+      if (role === "vendor") {
+        const res = await api.post("/api/auth/vendor-signup", { ...data, role: "vendor" });
+        if (res.status === 201 || res.status === 200) {
+          toast.success(res.data.message || "Your vendor account is under review. Admin will approve it shortly.");
+          navigate("/login");
+        }
       } else {
+        const res = await registerUser({ ...data, role: "customer" });
+        if (res.status === 201 || res.status === 200) {
+          toast.success("Account created successfully. Please login to continue.");
+          navigate("/login");
+        }
       }
     } catch (err) {
-      console.log("error->", err);
-      toast.error(err.response?.data?.message || "Something went wrong");
+      toast.error(err.response?.data?.message || "Registration failed");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-96">
-        <h1 className="text-3xl font-bold text-center mb-6 text-gray-700">
-          Create Account
-        </h1>
-
-        <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
-          <div>
-            <label className="block text-gray-600 mb-1">First Name</label>
-            <input
-              type="text"
-              placeholder="firstname"
-              {...register("firstname", validationSchema.firstNameValidator)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
+    <>
+      <Navbar />
+      <div className="breadcrumb">
+        <div className="container">
+          <div className="breadcrumb-inner">
+            <ul className="list-inline list-unstyled">
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              <li className="active">Signup</li>
+            </ul>
           </div>
-
-          <div>
-            <label className="block text-gray-600 mb-1">Last Name</label>
-            <input
-              type="text"
-              placeholder="lastname"
-              {...register("lastname", validationSchema.lastNameValidator)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-600 mb-1">Email</label>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              {...register("email", validationSchema.emailValidator)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-600 mb-1">Password</label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              {...register("password", validationSchema.passwordValidator)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
-          >
-            Sign Up
-          </button>
-        </form>
-
-        <p className="text-sm text-center mt-4 text-gray-500">
-          Already have an account?{" "}
-          <span className="text-blue-500 cursor-pointer">Login</span>
-        </p>
+        </div>
       </div>
-    </div>
+      <div className="body-content">
+        <div className="container">
+          <div className="sign-in-page">
+            <div className="row">
+              <div className="col-md-6 col-sm-6 create-new-account">
+                <h4 className="checkout-subtitle">Create a new account</h4>
+                <p className="text title-tag-line">Choose your account type and fill in the details.</p>
+
+                {/* Role Toggle */}
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                  <button
+                    onClick={() => { setRole("customer"); reset(); }}
+                    style={{
+                      flex: 1, padding: '10px',
+                      backgroundColor: role === "customer" ? '#0f6cb2' : '#e0e0e0',
+                      color: role === "customer" ? '#fff' : '#333',
+                      border: 'none', borderRadius: '4px', fontWeight: 'bold'
+                    }}
+                  >
+                    Sign up as Customer
+                  </button>
+                  <button
+                    onClick={() => { setRole("vendor"); reset(); }}
+                    style={{
+                      flex: 1, padding: '10px',
+                      backgroundColor: role === "vendor" ? '#0f6cb2' : '#e0e0e0',
+                      color: role === "vendor" ? '#fff' : '#333',
+                      border: 'none', borderRadius: '4px', fontWeight: 'bold'
+                    }}
+                  >
+                    Sign up as Vendor
+                  </button>
+                </div>
+
+                <form
+                  className="register-form outer-top-xs"
+                  onSubmit={handleSubmit(submitHandler)}
+                >
+                  <div className="form-group">
+                    <label className="info-title">
+                      {role === "vendor" ? "Owner Name" : "Name"} <span>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter your name"
+                      {...register("name", { required: true })}
+                      className="form-control unicase-form-control text-input"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="info-title">
+                      Email Address <span>*</span>
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="Enter your email"
+                      {...register("email", { required: true })}
+                      className="form-control unicase-form-control text-input"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="info-title">
+                      Phone Number <span>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter phone number"
+                      {...register("phoneNo", { required: true })}
+                      className="form-control unicase-form-control text-input"
+                    />
+                  </div>
+
+                  {role === "vendor" && (
+                    <>
+                      <div className="form-group">
+                        <label className="info-title">
+                          Shop Name <span>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter your shop name"
+                          {...register("shopName", { required: true })}
+                          className="form-control unicase-form-control text-input"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="info-title">
+                          Shop Address <span>*</span>
+                        </label>
+                        <textarea
+                          placeholder="Enter store full address"
+                          {...register("address", { required: true })}
+                          className="form-control unicase-form-control text-input"
+                          style={{ minHeight: '80px' }}
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  <div className="form-group">
+                    <label className="info-title">
+                      Password <span>*</span>
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="Enter your password"
+                      {...register("password", { required: true })}
+                      className="form-control unicase-form-control text-input"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="btn-upper btn btn-primary checkout-page-button w-100"
+                    style={{ width: "100%", padding: "12px", fontSize: "16px", marginTop: "10px" }}
+                  >
+                    {role === "vendor" ? "Submit Application" : "Sign Up"}
+                  </button>
+                  <div style={{ marginTop: "15px", textAlign: "center" }}>
+                    <Link to="/login" className="forgot-password">Already have an account? Log In</Link>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </>
   );
 };

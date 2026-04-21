@@ -1,69 +1,44 @@
-import axios from "axios";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { loginUser } from "../services/api";
+import { Navbar } from "./common/Navbar";
+import { Footer } from "./common/Footer";
 
 export const LoginPage = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({ mode: "all" });
-
-  const validationSchema = {
-    emailValidator: {
-      required: {
-        value: true,
-        message: "email is required*",
-      },
-    },
-    passwordValidator: {
-      required: {
-        value: true,
-        message: "password is required*",
-      },
-      validate: {
-        hasUpperCase: (value) =>
-          /[A-Z]/.test(value) || "At least 1 capital letter required",
-        hasNumber: (value) =>
-          /[0-9]/.test(value) || "At least 1 number required",
-        minLength: (value) =>
-          value.length >= 8 || "Minimum 8 characters required",
-      },
-    },
-  };
-
+  const { register, handleSubmit, getValues } = useForm();
   const navigate = useNavigate();
 
   const submitHandler = async (data) => {
     try {
-      const res = await axios.post("/user/login", data);
-      console.log("response...", res);
-
+      const res = await loginUser(data);
       if (res.status === 200) {
         toast.success("Login success");
 
-        switch (res.data.role) {
-          case "customer":
-            console.log("Welcome Customer");
-            navigate("/user");
-            break;
+        if (res.data.token) {
+          localStorage.setItem("token", res.data.token);
+        }
 
+        // Store user info (backward compatible)
+        const user = res.data.data || res.data.user;
+        const userId = user?._id || res.data._id;
+        const role = res.data.role || user?.role;
+
+        localStorage.setItem("customerId", userId);
+        localStorage.setItem("userName", user?.name || "");
+        localStorage.setItem("userRole", role || "customer");
+
+        switch (role) {
           case "admin":
-            console.log("Welcome Admin");
             navigate("/admin");
             break;
-
           case "vendor":
-            console.log("Welcome Vendor");
             navigate("/vendor");
             break;
-
           default:
-            toast.error("Invalid Role");
-            console.log("Invalid Role");
-            navigate("/login");
+            navigate("/");
+            break;
         }
       }
     } catch (err) {
@@ -71,47 +46,110 @@ export const LoginPage = () => {
     }
   };
 
+  const handleForgotPassword = () => {
+    const email = getValues("email")?.trim();
+    if (!email) {
+      toast.warning("Please enter your email address first");
+      return;
+    }
+    navigate("/forgot-password", { state: { email } });
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-96">
-        <h1 className="text-3xl font-bold text-center mb-6 text-gray-700">
-          Login
-        </h1>
-
-        <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
-          <div>
-            <label className="block text-gray-600 mb-1">Email</label>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              {...register("email", validationSchema.emailValidator)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
+    <>
+      <Navbar />
+      <div className="breadcrumb">
+        <div className="container">
+          <div className="breadcrumb-inner">
+            <ul className="list-inline list-unstyled">
+              <li>
+                <a href="/">Home</a>
+              </li>
+              <li className="active">Login</li>
+            </ul>
           </div>
-
-          <div>
-            <label className="block text-gray-600 mb-1">Password</label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              {...register("password", validationSchema.passwordValidator)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
-          >
-            Login
-          </button>
-        </form>
-
-        <p className="text-sm text-center mt-4 text-gray-500">
-          Don’t have an account?{" "}
-          <span className="text-blue-500 cursor-pointer">Register</span>
-        </p>
+        </div>
       </div>
-    </div>
+
+      <div className="body-content">
+        <div className="container">
+          <div className="sign-in-page">
+            <div className="row">
+              {/* Sign-in */}
+              <div className="col-md-6 col-sm-6 sign-in">
+                <h4 className="">Sign in</h4>
+                <p className="">Hello, Welcome to your account.</p>
+                <form
+                  className="register-form outer-top-xs"
+                  onSubmit={handleSubmit(submitHandler)}
+                >
+                  <div className="form-group">
+                    <label className="info-title">
+                      Email Address <span>*</span>
+                    </label>
+                    <input
+                      type="email"
+                      {...register("email", { required: true })}
+                      className="form-control unicase-form-control text-input"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="info-title">
+                      Password <span>*</span>
+                    </label>
+                    <input
+                      type="password"
+                      {...register("password", { required: true })}
+                      className="form-control unicase-form-control text-input"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="btn-upper btn btn-primary checkout-page-button"
+                  >
+                    Login
+                  </button>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginTop: "12px",
+                    }}
+                  >
+                    <span
+                      onClick={handleForgotPassword}
+                      style={{
+                        fontSize: "13px",
+                        color: "#1d6fd8",
+                        fontWeight: "600",
+                        textDecoration: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Forgot Password?
+                    </span>
+                    <Link
+                      to="/signup"
+                      style={{
+                        fontSize: "13px",
+                        color: "#374151",
+                        textDecoration: "none",
+                      }}
+                    >
+                      Don't have an account?{" "}
+                      <span style={{ color: "#1d6fd8", fontWeight: "600" }}>
+                        Sign Up
+                      </span>
+                    </Link>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </>
   );
 };

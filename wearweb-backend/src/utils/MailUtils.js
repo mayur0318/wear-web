@@ -1,7 +1,7 @@
 const mailer = require("nodemailer");
 require("dotenv").config();
 
-const mailSend = async (to, subject, text) => {
+const mailSend = async (to, subject, text, customHtml) => {
   const transporter = await mailer.createTransport({
     service: "gmail",
     auth: {
@@ -9,7 +9,7 @@ const mailSend = async (to, subject, text) => {
       pass: process.env.USER_PASSWORD,
     },
   });
-  const htmlContent = `<!DOCTYPE html>
+  const defaultHtml = `<!DOCTYPE html>
 <html>
 <head>
   <style>
@@ -98,7 +98,7 @@ const mailSend = async (to, subject, text) => {
   const mailOptions = {
     to: to,
     subject: subject,
-    html: htmlContent,
+    html: customHtml || defaultHtml,
   };
 
   const mailResponse = await transporter.sendMail(mailOptions);
