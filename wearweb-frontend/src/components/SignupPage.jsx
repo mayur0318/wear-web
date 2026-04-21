@@ -1,21 +1,15 @@
-<<<<<<< HEAD
 import React, { useState } from "react";
-=======
-import React from "react";
->>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
+
 import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { registerUser } from "../services/api";
-<<<<<<< HEAD
 import api from "../services/api";
-=======
->>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
+
 import { Navbar } from "./common/Navbar";
 import { Footer } from "./common/Footer";
 
 export const SignupPage = () => {
-<<<<<<< HEAD
   const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
   const [role, setRole] = useState("customer");
@@ -34,17 +28,7 @@ export const SignupPage = () => {
           toast.success("Account created successfully. Please login to continue.");
           navigate("/login");
         }
-=======
-  const { register, handleSubmit } = useForm();
-  const navigate = useNavigate();
 
-  const submitHandler = async (data) => {
-    try {
-      const res = await registerUser({ ...data, role: "customer" });
-      if (res.status === 201 || res.status === 200) {
-        toast.success("Account created successfully");
-        navigate("/login");
->>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed");
@@ -72,7 +56,6 @@ export const SignupPage = () => {
             <div className="row">
               <div className="col-md-6 col-sm-6 create-new-account">
                 <h4 className="checkout-subtitle">Create a new account</h4>
-<<<<<<< HEAD
                 <p className="text title-tag-line">Choose your account type and fill in the details.</p>
 
                 {/* Role Toggle */}
@@ -101,20 +84,14 @@ export const SignupPage = () => {
                   </button>
                 </div>
 
-=======
-                <p className="text title-tag-line">Create your new account.</p>
->>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
                 <form
                   className="register-form outer-top-xs"
                   onSubmit={handleSubmit(submitHandler)}
                 >
                   <div className="form-group">
                     <label className="info-title">
-<<<<<<< HEAD
                       {role === "vendor" ? "Owner Name" : "Name"} <span>*</span>
-=======
-                      Name <span>*</span>
->>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
+
                     </label>
                     <input
                       type="text"
@@ -145,7 +122,6 @@ export const SignupPage = () => {
                       className="form-control unicase-form-control text-input"
                     />
                   </div>
-<<<<<<< HEAD
 
                   {role === "vendor" && (
                     <>
@@ -174,8 +150,6 @@ export const SignupPage = () => {
                     </>
                   )}
 
-=======
->>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
                   <div className="form-group">
                     <label className="info-title">
                       Password <span>*</span>
@@ -189,7 +163,6 @@ export const SignupPage = () => {
                   </div>
                   <button
                     type="submit"
-<<<<<<< HEAD
                     className="btn-upper btn btn-primary checkout-page-button w-100"
                     style={{ width: "100%", padding: "12px", fontSize: "16px", marginTop: "10px" }}
                   >
@@ -198,12 +171,7 @@ export const SignupPage = () => {
                   <div style={{ marginTop: "15px", textAlign: "center" }}>
                     <Link to="/login" className="forgot-password">Already have an account? Log In</Link>
                   </div>
-=======
-                    className="btn-upper btn btn-primary checkout-page-button"
-                  >
-                    Sign Up
-                  </button>
->>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
+
                 </form>
               </div>
             </div>

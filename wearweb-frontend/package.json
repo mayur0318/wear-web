@@ -12,15 +12,10 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",
     "axios": "^1.13.5",
-<<<<<<< HEAD
     "browser-image-compression": "^2.0.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-=======
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",
->>>>>>> bb88c13d3fda24481acc557261a1bc5c8b68fee1
     "react-hook-form": "^7.71.2",
     "react-toastify": "^11.0.5",
     "recharts": "^3.8.1",
